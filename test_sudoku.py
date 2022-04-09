@@ -69,13 +69,13 @@ def test_numbers_are_invalid_for_square_if_already_present_in_same_row():
     assert NewSudoku.squares[35].number == 0
 
 def test_numbers_are_invalid_for_square_if_already_present_in_same_region():
-    ns = Sudoku() 
-    assert ns.squares[45].possible_numbers == [1, 2, 3, 4, 5, 6, 7, 8, 9]
-    ns.squares[33].assign_number(2)
-    ns.squares[52].assign_number(4)
-    ns.squares[44].assign_number(2)
-    ns.squares[44].assign_number(4)
-    assert ns.squares[44].number == 0
+    NewSudoku = Sudoku() 
+    assert NewSudoku.squares[45].possible_numbers == [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    NewSudoku.squares[33].assign_number(2)
+    NewSudoku.squares[52].assign_number(4)
+    NewSudoku.squares[44].assign_number(2)
+    NewSudoku.squares[44].assign_number(4)
+    assert NewSudoku.squares[44].number == 0
 
 
 retcode = pytest.main(["-x", __file__])
