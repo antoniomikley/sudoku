@@ -1,41 +1,56 @@
 class Sudoku:
     def __init__(self):
         self.squares = []
-        self.columns = {}
-        self.rows = {}
-        self.regions = {}
-        self.create_9_by_9_grid_of_squares()
+        self.columns = []
+        self.rows = []
+        self.regions = []
+        self.create_9_by_9_sudoku()
 
-    def create_9_by_9_grid_of_squares(self):
+    def create_9_by_9_sudoku(self):
+        for i in range(0, 10):
+            self.columns.append([])
+            self.rows.append([])
+            self.regions.append([])
         for n in range(0, 81):
-            column = n % 9
+            col = n % 9
             row = n // 9
-            region = column // 3 + row // 3 * 3
-            self.squares.append(Square(column, row, region))
-            if n == 0:
-                for i in range(0, 9):
-                    self.columns[i] = []
-                    self.rows[i] = []
-                    self. regions[i] = []
-            self.columns[column].append(self.squares[n])
+            reg = col // 3 + row // 3 * 3
+            self.squares.append(Square(col, row, reg, self))
+            self.columns[col].append(self.squares[n])
             self.rows[row].append(self.squares[n])
-            self.regions[region].append(self.squares[n])
+            self.regions[reg].append(self.squares[n])
 
-class Square():
-    def __init__(self, column = None, row = None, region = None):
+class Square:
+    def __init__(self, column, row, region, grid):
         self.column = column
         self.row = row
         self.region = region
-        self.number = None
-        self.possible_numbers = set([1, 2 ,3 ,4 ,5 ,6 ,7 ,8 ,9])
+        self.number = 0
+        self.grid = grid
 
-    def is_empty(self):
-        if self.number == None:
-            return True
-        else:
-            return False
+    @property
+    def possible_numbers(self):
+        possible_numbers = [n for n in range(1, 10) if n not in self.get_numbers_in_same_column() + self.get_numbers_in_same_row() + self.get_numbers_in_same_region()]
+        return possible_numbers
 
     def assign_number(self, num):
-        if self.is_empty() and num in self.possible_numbers:
-           self.number = num
+        if self.number == 0 and num in self.possible_numbers:
+            self.number = num
 
+    def get_numbers_in_same_column(self):
+        numbers_same_column = []
+        for n in range(0, 9):
+            numbers_same_column.append(self.grid.columns[self.column][n].number)
+        return numbers_same_column
+
+    def get_numbers_in_same_row(self):
+        numbers_same_row = []
+        for n in range(0, 9):
+            numbers_same_row.append(self.grid.rows[self.row][n].number)
+        return numbers_same_row
+
+    def get_numbers_in_same_region(self):
+        numbers_same_region = []
+        for n in range(0, 9):
+            numbers_same_region.append(self.grid.regions[self.region][n].number)
+        return numbers_same_region
