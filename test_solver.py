@@ -1,18 +1,19 @@
 import pytest
 from sudoku import *
-import solver
+from solver import *
 
 # if there is only one possible number for a particular square,
 # then it is the right correct number for that square. 
 def test_naked_single():
     Ns = Sudoku()
+    SudokuSolver = Solver(Ns)
     for n in range(1, 4):
         Ns.rows[0][n].assign_number(n)
     for n in range(4, 7):
         Ns.columns[0][n].assign_number(n)
     for n in range(7,9):
         Ns.regions[0][n].assign_number(n)
-    solver.naked_single(Ns)
+    SudokuSolver.naked_single()
     assert Ns.squares[0].number == 9
 
 # if for a column, row or region, there is only one possibilty in which square
@@ -22,12 +23,29 @@ def test_naked_single():
 # results of the test, but it also should not affect the functionality in a real world scenario.. hopefully..
 def test_hidden_single():
     Ns = Sudoku()
+    SudokuSolver = Solver(Ns)
     Ns.rows[1][0].assign_number(1)
     Ns.rows[1][2].assign_number(3)
     Ns.rows[0][3].assign_number(2)
     Ns.rows[2][8].assign_number(2)
-    solver.hidden_single(Ns)
+    SudokuSolver.hidden_single()
     assert Ns.rows[1][1].number == 2
+
+# if a number has only two possible squares in their region in which they can be entered and
+# these squares are in the same column or row, then this number cannot appear
+# in the squares of that column or row that are not part of the region. 
+def test_locked_candidates():
+    Ns = Sudoku()
+    SudokuSolver = Solver(Ns)
+    Ns.rows[0][1].assign_number(1)
+    Ns.rows[0][2].assign_number(2)
+    Ns.rows[1][6].assign_number(3)
+    Ns.rows[2][1].assign_number(5)
+    Ns.rows[2][2].assign_number(6)
+    SudokuSolver.locked_candidates()
+    assert SudokuSolver.get_squares_region_sharing_possible_num(0, 3) == [SudokuSolver.grid.columns[0][0], SudokuSolver.grid.columns[0][2]]
+    for i in range(3,9):
+        assert Ns.columns[0][i].possible_numbers.count(3) == 0
 
 
 retcode = pytest.main(["-x", __file__])

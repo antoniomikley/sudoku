@@ -27,11 +27,20 @@ class Square:
         self.region = region
         self.number = 0
         self.grid = grid
+        self.eliminated_numbers = []
 
     @property
     def possible_numbers(self):
-        possible_numbers = [n for n in range(1, 10) if n not in self.get_numbers_in_same_column() + self.get_numbers_in_same_row() + self.get_numbers_in_same_region()]
-        return possible_numbers
+        if self.number == 0:
+            possible_numbers = [n for n in range(1, 10) if n not in self.invalid_numbers]
+            return possible_numbers
+        else:
+            return []
+
+    @property
+    def invalid_numbers(self):
+        invalid_numbers = self.get_numbers_in_same_column() + self.get_numbers_in_same_row() + self.get_numbers_in_same_region() + self.eliminated_numbers
+        return invalid_numbers
 
     def assign_number(self, num):
         if self.number == 0 and num in self.possible_numbers:
