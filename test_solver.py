@@ -43,9 +43,24 @@ def test_locked_candidates():
     Ns.rows[2][1].assign_number(5)
     Ns.rows[2][2].assign_number(6)
     SudokuSolver.locked_candidates()
-    assert SudokuSolver.get_squares_region_sharing_possible_num(0, 3) == [SudokuSolver.grid.columns[0][0], SudokuSolver.grid.columns[0][2]]
+    assert SudokuSolver.get_squares_sharing_possible_nums_in(Ns.columns[0], [3]) == [SudokuSolver.grid.columns[0][0], SudokuSolver.grid.columns[0][2]]
     for i in range(3,9):
         assert Ns.columns[0][i].possible_numbers.count(3) == 0
 
 
 retcode = pytest.main(["-x", __file__])
+
+# if in a column, row or region there are two squares that have the exact same
+# two numbers they could possibly hold, then these numbers are not possible locked_candidates
+# for the remaining squares in that column, row, or region.
+def test_naked_pair():
+    Ns = Sudoku()
+    SuSolver = Solver(Ns)
+    Ns.rows[0][0].eliminated_numbers = [3, 4, 5, 6, 7, 8, 9]
+    Ns.rows[0][1].eliminated_numbers = [3, 4, 5, 6, 7, 8, 9]
+    Ns.columns[0][3].eliminated_numbers = [3, 4, 5, 6, 7, 8, 9]
+    SuSolver.naked_pair()
+    for i in range(2, 9):
+        assert Ns.rows[0][i].possible_numbers.count(1) and Ns.rows[0][i].possible_numbers.count(2) == 0
+        assert Ns.regions[0][i].possible_numbers.count(1) and Ns.regions[0][i].possible_numbers.count(2) == 0
+        assert Ns.columns[0][3 if i == 2 else i].possible_numbers.count(1) and Ns.columns[0][i].possible_numbers.count(2) == 0
