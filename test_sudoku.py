@@ -77,5 +77,22 @@ def test_numbers_are_invalid_for_square_if_already_present_in_same_region():
     NewSudoku.squares[44].assign_number(4)
     assert NewSudoku.squares[44].number == 0
 
+def test_inputing_a_list_of_numbers_assigns_each_number_to_A_square():
+    NewSudoku = Sudoku()
+    sudoku_numbers = [
+        5, 3, 0, 0, 7, 0, 0, 0, 0,
+        6, 0, 0, 1, 9, 5, 0, 0, 0,
+        0, 9, 8, 0, 0, 0, 0, 6, 0,
+        8, 0, 0, 0, 6, 0, 0, 0, 3,
+        4, 0, 0, 8, 0, 3, 0, 0, 1,
+        7, 0, 0, 0, 2, 0, 0, 0, 6,
+        0, 6, 0, 0, 0, 0, 2, 8, 0,
+        0, 0, 0, 4, 1, 9, 0 ,0, 5,
+        0, 0, 0, 0, 8, 0, 0, 7, 9
+        ]
+    NewSudoku.input_numbers(sudoku_numbers)
+    for i in range(0, len(sudoku_numbers) -1):
+        assert NewSudoku.squares[i].number == sudoku_numbers[i]
+
 
 retcode = pytest.main(["-x", __file__])

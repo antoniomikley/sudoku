@@ -19,6 +19,11 @@ class Sudoku:
             self.columns[col].append(self.squares[n])
             self.rows[row].append(self.squares[n])
             self.regions[reg].append(self.squares[n])
+    
+    def input_numbers(self, sudoku: list):
+        for i in range(0, len(sudoku) -1):
+            self.squares[i].assign_number(sudoku[i])
+
 
 class Square:
     def __init__(self, column, row, region, grid):
@@ -63,3 +68,4 @@ class Square:
         for n in range(0, 9):
             numbers_same_region.append(self.grid.regions[self.region][n].number)
         return numbers_same_region
+
