@@ -1,4 +1,6 @@
 from sudoku import *
+from itertools import groupby
+from operator import attrgetter
 
 class Solver:
     def __init__(self, sudoku_to_solve):
@@ -13,7 +15,15 @@ class Solver:
         return pos_nums
 
     def get_squares_sharing_possible_nums_in(self, col_row_reg, nums): 
-        return [square for square in col_row_reg if set(nums).issubset(set(square.possible_numbers))]
+        squares_sharing_pos_nums = []
+        for square in col_row_reg:
+            if all([num in square.possible_numbers for num in nums]):
+                squares_sharing_pos_nums.append(square)
+        return squares_sharing_pos_nums
+
+    def get_square_with_same_possible_nums_in(self, col_row_reg, nums):
+        square_with_same_pos_nums = [square for square in col_row_reg if square.possible_numbers == nums]
+        return square_with_same_pos_nums
 
     # Sudoku solving techniques
     def naked_single(self):
@@ -48,36 +58,28 @@ class Solver:
                             if square.region != squares_with_number_n[0].region:
                                 square.eliminated_numbers.append(n)
 
-                
-
-
-    def naked_base(self, n, col_row_reg, pos_set, squares, invalids):
-        for square in col_row_reg:
-            if square not in squares and len(invalids) < 9:
-                if len(set(pos_set)) <= n:
-                    pos_set.extend(square.possible_numbers)
-                    squares.append(square)
-                elif square not in invalids:
-                    pos_set.remove(num for num in squares[-1].possible_numbers)
-                    squares.pop(-1)
-                    invalids.append(square)
-                    self.naked_base(n, col_row_reg,pos_set, squares, invalids)
-        return squares
-
     def naked_pair(self):
-        for i in range(0, 9):
-            self.naked_base(2, self.grid.columns[i], [], [], [])
-            self.naked_base(2, self.grid.rows[i], [], [], [])
-            self.naked_base(2, self.grid.regions[i], [], [], [])
+        for i in range(0,9):
+            for square in self.grid.columns[i]:
+                if len(square.possible_numbers) == 2:
+                    possible_naked_pairs = self.get_square_with_same_possible_nums_in(self.grid.columns[i], square.possible_numbers)
+                    if len(possible_naked_pairs) == 2 and possible_naked_pairs[0].possible_numbers == possible_naked_pairs[1].possible_numbers:
+                        for other_squares in self.grid.columns[i]:
+                            if other_squares not in possible_naked_pairs:
+                                other_squares.eliminated_numbers += square.possible_numbers
+            for square in self.grid.rows[i]:
+                if len(square.possible_numbers) == 2:
+                    possible_naked_pairs = self.get_square_with_same_possible_nums_in(self.grid.rows[i], square.possible_numbers)
+                    if len(possible_naked_pairs) == 2 and possible_naked_pairs[0].possible_numbers == possible_naked_pairs[1].possible_numbers:
+                        for other_squares in self.grid.rows[i]:
+                            if other_squares not in possible_naked_pairs:
+                                other_squares.eliminated_numbers += square.possible_numbers
+            for square in self.grid.regions[i]:
+                if len(square.possible_numbers) == 2:
+                    possible_naked_pairs = self.get_square_with_same_possible_nums_in(self.grid.regions[i], square.possible_numbers)
+                    if len(possible_naked_pairs) == 2 and possible_naked_pairs[0].possible_numbers == possible_naked_pairs[1].possible_numbers:
+                        for other_squares in self.grid.regions[i]:
+                            if other_squares not in possible_naked_pairs:
+                                other_squares.eliminated_numbers += square.possible_numbers
 
 
-            
-                    
-                
-
-        
-
-                    
-                    
-
-                    
