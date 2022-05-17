@@ -1,10 +1,10 @@
 from sudoku import *
-from itertools import groupby
-from operator import attrgetter
+
 
 class Solver:
     def __init__(self, sudoku_to_solve):
         self.grid = sudoku_to_solve
+        self.solutions = []
 
     def get_possible_num_in(self, col_row_reg: list):
         pos_nums = []
@@ -81,5 +81,18 @@ class Solver:
                         for other_squares in self.grid.regions[i]:
                             if other_squares not in possible_naked_pairs:
                                 other_squares.eliminated_numbers += square.possible_numbers
+
+    def get_solutions(self):
+        for square in self.grid.squares:
+            if square.number == 0:
+                for n in range(1, 10):
+                    if n in square.possible_numbers:
+                        square.number = n
+                        self.get_solutions()
+                        square.number = 0
+                return
+        self.solutions.append([square.number for square in self.grid.squares])
+
+            
 
 

@@ -50,6 +50,8 @@ class Square:
     def assign_number(self, num):
         if self.number == 0 and num in self.possible_numbers:
             self.number = num
+        else:
+            return False
 
     def get_numbers_in_same_column(self):
         numbers_same_column = []
