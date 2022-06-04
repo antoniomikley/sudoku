@@ -93,6 +93,56 @@ class Solver:
                 return
         self.solutions.append([square.number for square in self.grid.squares])
 
-            
+    def _naked_base(self, col_row_reg, n):
+        squares = [square for square in col_row_reg if len(square.possible_numbers) <= n and square.possible_numbers != []]
+        if len(squares) <= n:
+            print("fail")
+            return False
+        naked_triplets = [squares[0]]
+        naked_candidates = set(naked_triplets[0].possible_numbers)
+        squares.pop(0)
+        for square in squares:
+            if len(naked_candidates.union(square.possible_numbers)) <= n:
+                naked_triplets.append(square)
+                naked_candidates.update(square.possible_numbers)
+        if len(naked_triplets) == n:
+            for square in col_row_reg: 
+                if square not in naked_triplets:
+                    square.eliminated_numbers.extend(list(naked_candidates))
+            return True
+        print([square.possible_numbers for square in naked_triplets])
+        print(len(naked_triplets))
+        print(naked_candidates)
+        self.naked_base(squares, n)
 
+    def naked_base(self, col_row_reg, n):
+        possible_naked_triplets = [square for square in col_row_reg if len(square.possible_numbers) <= n and square.possible_numbers != []]
+        if len(possible_naked_triplets) <= n:
+            return False
+        naked_triplets = [possible_naked_triplets[0]]
+        naked_candidates = set(naked_triplets[0].possible_numbers)
+        possible_naked_triplets.pop(0)
+        for square in possible_naked_triplets:
+            if len(naked_candidates.union(set(square.possible_numbers))) <= n:
+                naked_triplets.append(square)
+                naked_candidates.update(set(square.possible_numbers))
+        if len(naked_triplets) == n:
+            for square in col_row_reg:
+                if square not in naked_triplets:
+                    square.eliminated_numbers.extend(list(naked_candidates))
+            return True
+        self.naked_base(possible_naked_triplets, n)
+    
+
+
+    def naked_triplet(self, n = 3):
+        for row in self.grid.rows:
+            self.naked_base(row, n)
+        for column in self.grid.columns:
+            self.naked_base(column, n)
+        for region in self.grid.regions:
+            self.naked_base(region, n)
+
+    def naked_quad(self):
+        self.naked_triplet(4)
 

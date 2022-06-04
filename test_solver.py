@@ -115,3 +115,41 @@ def test_get_all_solutions_if_there_are_multiple():
     SuSolver.get_solutions()
     assert len(SuSolver.solutions) > 1
 
+# if in a column, row or region there are exactly three squares which possible numbers
+# form a set with a total of three unique elements, then these numbers are not possible candidates
+# for the other squares in the same column, row or region.
+# it is basically the same as a naked pair, but with one more possible candidate involved.
+def test_naked_triplet():
+    Ns = Sudoku()
+    SuSolver = Solver(Ns)
+    Ns.rows[0][2].eliminated_numbers = [1, 3, 4, 7, 8, 9]
+    Ns.rows[0][1].number = 2
+    Ns.rows[0][0].eliminated_numbers = [3, 5, 6, 7]
+    Ns.rows[0][3].eliminated_numbers = [1, 3, 5, 6, 8, 9]
+    Ns.rows[0][4].eliminated_numbers = [1, 3, 4, 5, 7, 9]
+    Ns.rows[0][5].eliminated_numbers = [3, 4, 5, 8, 9]
+    Ns.rows[0][6].eliminated_numbers = [1, 5, 6, 8]
+    Ns.rows[0][7].eliminated_numbers = [1, 6, 8]
+    Ns.rows[0][8].eliminated_numbers = [1, 3, 4, 6, 7, 9]
+    SuSolver.naked_triplet()
+    assert Ns.rows[0][0].possible_numbers == [1, 4, 9]
+    assert Ns.rows[0][5].possible_numbers == [1, 7]
+    assert Ns.rows[0][7].possible_numbers == [3, 4, 7, 9]
+
+# same as naked triplets but with four squares which possible numbers form a set with four elements
+def test_naked_quad():
+    Ns = Sudoku()
+    SuSolver = Solver(Ns)
+    Ns.regions[6][0].eliminated_numbers =[2, 3, 4, 5, 6, 7, 8]
+    Ns.regions[6][1].number = 5
+    Ns.regions[6][2].eliminated_numbers =[2, 4, 5, 7, 9]
+    Ns.regions[6][3].eliminated_numbers =[2, 3, 4, 5, 6, 8]
+    Ns.regions[6][4].eliminated_numbers =[2, 4, 5, 6, 8]
+    Ns.regions[6][5].eliminated_numbers =[2, 4, 5, 6, 7, 8, 9]
+    Ns.regions[6][6].eliminated_numbers =[2, 3, 5, 6, 7,]
+    Ns.regions[6][7].eliminated_numbers =[2, 3, 5, 7, 8]
+    Ns.regions[6][8].number = 2
+    SuSolver.naked_quad()
+    assert Ns.regions[6][2].possible_numbers == [6, 8]
+    assert Ns.regions[6][6].possible_numbers == [4, 8]
+    assert Ns.regions[6][7].possible_numbers == [4, 6]
