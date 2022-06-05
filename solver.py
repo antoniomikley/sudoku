@@ -46,6 +46,20 @@ class Solver:
                     if possible_locked_candidates[0].row == possible_locked_candidates[1].row:
                         for square in [sq for sq in self.grid.rows[possible_locked_candidates[0].row] if sq not in region]:
                             square.eliminated_numbers.append(n)
+        for column in self.grid.columns:
+            for n in range(1, 10):
+                if self.get_possible_num_in(column).count(n) == 2:
+                    possible_locked_candidates = [square for square in column if n in square.possible_numbers]
+                    if possible_locked_candidates[0].region == possible_locked_candidates[1].region:
+                        for square in [sq for sq in self.grid.regions[possible_locked_candidates[0].region] if sq not in column]:
+                            square.eliminated_numbers.append(n)
+        for row in self.grid.rows:
+            for n in range(1, 10):
+                if self.get_possible_num_in(row).count(n) == 2:
+                    possible_locked_candidates = [square for square in row if n in square.possible_numbers]
+                    if possible_locked_candidates[0].region == possible_locked_candidates[1].region:
+                        for square in [sq for sq in self.grid.regions[possible_locked_candidates[0].region] if sq not in row]:
+                            square.eliminated_numbers.append(n)
 
     def get_solutions(self):
         for square in self.grid.squares:

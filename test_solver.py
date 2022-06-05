@@ -46,6 +46,39 @@ def test_locked_candidates():
     for i in range(3,9):
         assert Ns.columns[0][i].possible_numbers.count(3) == 0
 
+    Ns2 = Sudoku()
+    SudokuSolver = Solver(Ns2)
+    Ns2.rows[1][0].assign_number(1)
+    Ns2.rows[2][0].assign_number(2)
+    Ns2.rows[6][1].assign_number(3)
+    Ns2.rows[1][2].assign_number(5)
+    Ns2.rows[2][2].assign_number(6)
+    SudokuSolver.locked_candidates()
+    for i in range(3,9):
+        assert Ns2.rows[0][i].possible_numbers.count(3) == 0
+
+    Ns3 = Sudoku()
+    SuSolver = Solver(Ns3)
+    Ns3.rows[0][0].eliminated_numbers = [1, 2, 3, 4, 5, 8, 9]
+    Ns3.rows[0][1].eliminated_numbers = [2, 3, 4, 5, 8, 9]
+    Ns3.rows[0][2].number = 3
+    Ns3.rows[0][3].eliminated_numbers = [2, 3, 4, 5, 7, 8]
+    Ns3.rows[0][4].eliminated_numbers = [2, 3, 4, 5, 6, 7]
+    Ns3.rows[0][5].eliminated_numbers = [1, 3, 4, 5, 7, 8, 9]
+    Ns3.rows[0][6].number = 4 
+    Ns3.rows[0][7].eliminated_numbers = [1, 3, 4, 5, 6, 7, 9]
+    Ns3.rows[0][8].number = 5
+    Ns3.regions[0][3].eliminated_numbers = [1, 2, 3, 4, 5, 6, 9]
+    Ns3.regions[0][5].eliminated_numbers = [2, 3, 4, 6, 7, 8, 9]
+    Ns3.regions[0][7].eliminated_numbers = [2, 3, 4, 5, 8, 9]
+    Ns3.regions[0][4].number = 2
+    Ns3.regions[0][6].number = 9
+    Ns3.regions[0][8].number = 4
+    SuSolver.locked_candidates()
+    assert Ns3.regions[0][3].possible_numbers.count(7) == 0
+    assert Ns3.regions[0][7].possible_numbers.count(7) == 0
+
+
 
 retcode = pytest.main(["-x", __file__])
 
