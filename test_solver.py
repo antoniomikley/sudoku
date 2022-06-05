@@ -43,7 +43,6 @@ def test_locked_candidates():
     Ns.rows[2][1].assign_number(5)
     Ns.rows[2][2].assign_number(6)
     SudokuSolver.locked_candidates()
-    assert SudokuSolver.get_squares_sharing_possible_nums_in(Ns.columns[0], [3]) == [SudokuSolver.grid.columns[0][0], SudokuSolver.grid.columns[0][2]]
     for i in range(3,9):
         assert Ns.columns[0][i].possible_numbers.count(3) == 0
 
@@ -140,16 +139,78 @@ def test_naked_triplet():
 def test_naked_quad():
     Ns = Sudoku()
     SuSolver = Solver(Ns)
-    Ns.regions[6][0].eliminated_numbers =[2, 3, 4, 5, 6, 7, 8]
+    Ns.regions[6][0].eliminated_numbers = [2, 3, 4, 5, 6, 7, 8]
     Ns.regions[6][1].number = 5
-    Ns.regions[6][2].eliminated_numbers =[2, 4, 5, 7, 9]
-    Ns.regions[6][3].eliminated_numbers =[2, 3, 4, 5, 6, 8]
-    Ns.regions[6][4].eliminated_numbers =[2, 4, 5, 6, 8]
-    Ns.regions[6][5].eliminated_numbers =[2, 4, 5, 6, 7, 8, 9]
-    Ns.regions[6][6].eliminated_numbers =[2, 3, 5, 6, 7,]
-    Ns.regions[6][7].eliminated_numbers =[2, 3, 5, 7, 8]
+    Ns.regions[6][2].eliminated_numbers = [2, 4, 5, 7, 9]
+    Ns.regions[6][3].eliminated_numbers = [2, 3, 4, 5, 6, 8]
+    Ns.regions[6][4].eliminated_numbers = [2, 4, 5, 6, 8]
+    Ns.regions[6][5].eliminated_numbers = [2, 4, 5, 6, 7, 8, 9]
+    Ns.regions[6][6].eliminated_numbers = [2, 3, 5, 6, 7]
+    Ns.regions[6][7].eliminated_numbers = [2, 3, 5, 7, 8]
     Ns.regions[6][8].number = 2
     SuSolver.naked_quad()
     assert Ns.regions[6][2].possible_numbers == [6, 8]
     assert Ns.regions[6][6].possible_numbers == [4, 8]
     assert Ns.regions[6][7].possible_numbers == [4, 6]
+
+# if there is a pair of numbers that are possible candidates for only two 
+#squares, then there are no other possible candidates for those two squares
+def test_hidden_pair():
+    Ns = Sudoku()
+    SuSolver = Solver(Ns)
+    Ns.regions[6][0].number = 3
+    Ns.regions[6][1].eliminated_numbers = [1, 2, 3, 6, 7, 9]
+    Ns.regions[6][2].number = 1
+    Ns.regions[6][3].eliminated_numbers = [1, 2, 3, 6, 8, 9]
+    Ns.regions[6][4].number = 2
+    Ns.regions[6][5].eliminated_numbers = [1, 2, 3, 6, 7, 8, 9]
+    Ns.regions[6][6].eliminated_numbers = [1, 2, 3, 4, 5]
+    Ns.regions[6][7].eliminated_numbers = [1, 2, 3, 4, 5, 6, 9]
+    Ns.regions[6][8].eliminated_numbers = [1, 2, 3, 4, 5, 7]
+    SuSolver.hidden_pair()
+    assert Ns.regions[6][6].possible_numbers == [6, 9]
+    assert Ns.regions[6][8].possible_numbers == [6, 9]
+
+# same as hidden pair, but with three candidates in three squares
+def test_hidden_triplet():    
+    Ns = Sudoku()
+    SuSolver = Solver(Ns)
+    Ns.regions[6][0].eliminated_numbers = [1, 2, 3, 5, 6, 8, 9]
+    Ns.regions[6][1].eliminated_numbers = [1, 2, 3, 5, 6, 8]
+    Ns.regions[6][2].eliminated_numbers = [1, 2, 5, 6, 7, 8]
+    Ns.regions[6][3].eliminated_numbers = [3, 5, 9]
+    Ns.regions[6][4].eliminated_numbers = [1, 3, 5]
+    Ns.regions[6][5].eliminated_numbers = [2, 3, 5, 6, 7, 8]
+    Ns.regions[6][6].eliminated_numbers = [3, 5, 8, 9]
+    Ns.regions[6][7].number = 5
+    Ns.regions[6][8].eliminated_numbers = [2, 5, 6, 7, 8]
+    SuSolver.hidden_triplet()
+    assert Ns.regions[6][3].possible_numbers == [2, 6, 8]
+    assert Ns.regions[6][4].possible_numbers == [2, 6, 8]
+    assert Ns.regions[6][6].possible_numbers == [2, 6]
+
+# same as hidden pair and hidden triplet, but with four numbers. 
+# exceedingly rare. I don't even know where it is in the example for this test,
+# but there is a hidden quad in this sudoku, so the function should modify the possible numbers
+# of the hidden quad. Of course I don't know what those are so this test is super inaccurate,
+# however it still has to pass, cause if it does not, then there is definitly smth wrong with this function, 
+# but it passing could still mean, that it does not work correctly. 
+def test_hidden_quad():
+    Ns = Sudoku()
+    SuSolver = Solver(Ns)
+    sudoku_numbers = [
+            0, 0, 0, 3, 7, 4, 2, 0, 0,
+            0, 0, 0, 0, 8, 2, 0, 4, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 3, 0, 8, 2, 6,
+            6, 0, 0, 0, 9, 0, 0, 0, 4,
+            8, 0, 5, 0, 4, 6, 9, 7, 0,
+            5, 4, 7, 0, 2, 0, 0, 0, 9,
+            0, 0, 0, 0, 0, 0, 4, 0, 5,
+            0, 1, 0, 4, 5, 0, 7, 0, 2
+            ]
+    Ns.input_numbers(sudoku_numbers)
+    possible_numbers_before = [SuSolver.get_possible_num_in(column) for column in Ns.columns]
+    SuSolver.hidden_quad()
+    possible_numbers_after = [SuSolver.get_possible_num_in(column) for column in Ns.columns]
+    assert possible_numbers_before != possible_numbers_after
