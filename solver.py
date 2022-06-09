@@ -43,7 +43,7 @@ class Solver:
                     if possible_locked_candidates[0].column == possible_locked_candidates[1].column:
                         for square in [sq for sq in self.grid.columns[possible_locked_candidates[0].column] if sq not in region]:
                             square.eliminated_numbers.append(n)
-                    if possible_locked_candidates[0].row == possible_locked_candidates[1].row:
+                    elif possible_locked_candidates[0].row == possible_locked_candidates[1].row:
                         for square in [sq for sq in self.grid.rows[possible_locked_candidates[0].row] if sq not in region]:
                             square.eliminated_numbers.append(n)
         for column in self.grid.columns:
@@ -129,3 +129,76 @@ class Solver:
 
     def hidden_quad(self):
         self.hidden_pair(4)
+
+    def x_wing(self):
+        for n in range(1, 10):
+            x_wing = []
+            position = []
+            for row in self.grid.rows:
+                if self.get_possible_num_in(row).count(n) == 2:
+                    x_wing.append([square for square in row if n in square.possible_numbers])
+                    position.append([square.column for square in row if n in square.possible_numbers])
+            for column in position:
+                if position.count(column) != 2:
+                    x_wing.pop(position.index(column))
+                    position.pop(position.index(column))
+            if len(x_wing) == 2:
+                for square in self.grid.columns[x_wing[0][0].column]:
+                    if square not in x_wing[0] and square not in x_wing[1]:
+                        square.eliminated_numbers.append(n)
+                for square in self.grid.columns[x_wing[0][1].column]:
+                    if square not in x_wing[0] and square not in x_wing[1]:
+                        square.eliminated_numbers.append(n)
+            x_wing = []
+            position = []
+            for column in self.grid.columns:
+                if self.get_possible_num_in(column).count(n) == 2:
+                    x_wing.append([square for square in column if n in square.possible_numbers])
+                    position.append([square.row for square in column if n in square.possible_numbers])
+            for row in position:
+                if position.count(row) != 2:
+                    x_wing.pop(position.index(row))
+                    position.pop(position.index(row))
+            if len(x_wing) == 2:
+                for square in self.grid.rows[x_wing[0][0].row]:
+                    if square not in x_wing[0] and square not in x_wing[1]:
+                        square.eliminated_numbers.append(n)
+                for square in self.grid.rows[x_wing[0][1].row]:
+                    if square not in x_wing[0] and square not in x_wing[1]:
+                        square.eliminated_numbers.append(n)
+
+    def solve(self):
+        solved = False
+        counter = 0
+        level = 0
+        while not solved:
+            counter_before = counter
+            counter = 0
+            for square in self.grid.squares:
+                if square.number == 0:
+                    counter += 1
+            if counter == 0:
+                return True
+            elif counter_before == counter:
+                level += 1
+            elif counter_before > counter:
+                level = 0
+
+            self.naked_single()
+            self.hidden_single()
+            self.locked_candidates()
+            if level >= 1:
+                self.naked_pair()
+                self.hidden_pair()
+            if level >= 2:
+                self.naked_triplet()
+                self.hidden_triplet()
+                self.x_wing()
+                self.naked_quad()
+                self.hidden_quad()
+
+
+
+            
+
+
