@@ -24,6 +24,6 @@
 3. A nice GUI
 
 There are short explanations for currently impelmented solving tehniques in the solver test file.
-Information about these techniques I got from (https://sudoku9x9.com/sudoku_solving_techniques_9x9.html "here").
+Information about these techniques I got from [here](https://sudoku9x9.com/sudoku_solving_techniques_9x9.html).
 To use the cli run main.py in the terminal. Requires Python3 (obviously).
 The tests require pyTest.
