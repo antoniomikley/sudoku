@@ -13,8 +13,7 @@ class Solver:
         return pos_nums
 
     def get_square_with_same_possible_nums_in(self, col_row_reg, nums):
-        square_with_same_pos_nums = [square for square in col_row_reg if square.possible_numbers == nums]
-        return square_with_same_pos_nums
+        return [square for square in col_row_reg if square.possible_numbers == nums]
 
     # Sudoku solving techniques
     def naked_single(self):
@@ -23,21 +22,23 @@ class Solver:
                 square.assign_number(square.possible_numbers[0])
 
     def hidden_single(self):
-        for i in range(0,9):
-            for n in range(1, 10):
-                if self.get_possible_num_in(self.grid.columns[i]).count(n) == 1:
-                    for square in self.grid.columns[i]:
+        for n in range(1, 10):
+            for column in self.grid.columns:
+                if self.get_possible_num_in(column).count(n) == 1:
+                    for square in column:
                         square.assign_number(n)
-                if self.get_possible_num_in(self.grid.rows[i]).count(n) == 1:
-                    for square in self.grid.rows[i]:
+            for row in self.grid.rows:
+                if self.get_possible_num_in(row).count(n) == 1:
+                    for square in row:
                         square.assign_number(n)
-                if self.get_possible_num_in(self.grid.regions[i]).count(n) == 1:
-                    for square in self.grid.rows[i]:
+            for region in self.grid.regions:
+                if self.get_possible_num_in(region).count(n) == 1:
+                    for square in region:
                         square.assign_number(n)
 
     def locked_candidates(self):
-        for region in self.grid.regions:
-            for n in range (1, 10):
+        for n in range(1, 10):
+            for region in self.grid.regions:
                 if self.get_possible_num_in(region).count(n) == 2:
                     possible_locked_candidates = [square for square in region if n in square.possible_numbers]
                     if possible_locked_candidates[0].column == possible_locked_candidates[1].column:
@@ -46,15 +47,13 @@ class Solver:
                     elif possible_locked_candidates[0].row == possible_locked_candidates[1].row:
                         for square in [sq for sq in self.grid.rows[possible_locked_candidates[0].row] if sq not in region]:
                             square.eliminated_numbers.append(n)
-        for column in self.grid.columns:
-            for n in range(1, 10):
+            for column in self.grid.columns:
                 if self.get_possible_num_in(column).count(n) == 2:
                     possible_locked_candidates = [square for square in column if n in square.possible_numbers]
                     if possible_locked_candidates[0].region == possible_locked_candidates[1].region:
                         for square in [sq for sq in self.grid.regions[possible_locked_candidates[0].region] if sq not in column]:
                             square.eliminated_numbers.append(n)
-        for row in self.grid.rows:
-            for n in range(1, 10):
+            for row in self.grid.rows:
                 if self.get_possible_num_in(row).count(n) == 2:
                     possible_locked_candidates = [square for square in row if n in square.possible_numbers]
                     if possible_locked_candidates[0].region == possible_locked_candidates[1].region:
@@ -65,8 +64,7 @@ class Solver:
         for square in self.grid.squares:
             if square.number == 0:
                 for n in range(1, 10):
-                    if n in square.possible_numbers:
-                        square.number = n
+                    if square.assign_number(n):
                         self.get_solutions()
                         square.number = 0
                 return
@@ -196,6 +194,8 @@ class Solver:
                 self.x_wing()
                 self.naked_quad()
                 self.hidden_quad()
+            if level > 10:
+                return False
 
 
 
