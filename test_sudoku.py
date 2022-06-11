@@ -93,6 +93,8 @@ def test_inputing_a_list_of_numbers_assigns_each_number_to_A_square():
     NewSudoku.input_numbers(sudoku_numbers)
     for i in range(0, len(sudoku_numbers) -1):
         assert NewSudoku.squares[i].number == sudoku_numbers[i]
+        if sudoku_numbers[i] == 0:
+            assert NewSudoku.squares[i].locked == False
 
 
 retcode = pytest.main(["-x", __file__])

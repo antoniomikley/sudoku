@@ -20,7 +20,7 @@ def test_naked_single():
 # a particular number could be entered, then it is the right number for that square.
 # Test only covers the case, when the hidden single is deduced from the possible numbers
 # in a region, so cutting out the parts checking the rows and the columns wont affect the 
-# results of the test, but it also should not affect the functionality in a real world scenario.. hopefully..
+# results of the test.
 def test_hidden_single():
     Ns = Sudoku()
     SudokuSolver = Solver(Ns)
@@ -102,34 +102,36 @@ def test_naked_pair():
             assert SuSolver.grid.columns[0][i].possible_numbers.count(1) == 0
             assert SuSolver.grid.columns[0][i].possible_numbers.count(2) == 0
 
-'''
+
 def test_get_solutions():
     Ns = Sudoku()
     SuSolver = Solver(Ns)
     sudoku_numbers = [
-        5, 3, 0, 0, 7, 0, 0, 0, 0,
-        6, 0, 0, 1, 9, 5, 0, 0, 0,
-        0, 9, 8, 0, 0, 0, 0, 6, 0,
-        8, 0, 0, 0, 6, 0, 0, 0, 3,
-        4, 0, 0, 8, 0, 3, 0, 0, 1,
-        7, 0, 0, 0, 2, 0, 0, 0, 6,
-        0, 6, 0, 0, 0, 0, 2, 8, 0,
-        0, 0, 0, 4, 1, 9, 0 ,0, 5,
-        0, 0, 0, 0, 8, 0, 0, 7, 9
+       0, 0, 8, 0, 0, 1, 6, 0, 0, 
+       0, 9, 3, 0, 0, 0, 0, 7, 0, 
+       0, 2, 0, 0, 5, 3, 8, 1, 0, 
+       0, 0, 0, 1, 0, 0, 0, 3, 7, 
+       5, 0, 4, 6, 0, 0, 0, 0, 0, 
+       0, 0, 0, 0, 2, 5, 9, 0, 0, 
+       0, 0, 0, 2, 0, 0, 0, 5, 0, 
+       7, 1, 6, 0, 0, 0, 0, 0, 8, 
+       0, 8, 0, 0, 0, 9, 0, 0, 4
         ]
     Ns.input_numbers(sudoku_numbers)
     SuSolver.get_solutions()
     assert SuSolver.solutions == [[
-            5, 3, 4, 6, 7, 8, 9, 1, 2,
-            6, 7, 2, 1, 9, 5, 3, 4, 8,
-            1, 9, 8, 3, 4, 2, 5, 6, 7,
-            8, 5, 9, 7, 6, 1, 4, 2, 3,
-            4, 2, 6, 8, 5, 3, 7, 9, 1,
-            7, 1, 3, 9, 2, 4, 8, 5, 6,
-            9, 6, 1, 5, 3, 7, 2, 8, 4,
-            2, 8, 7 ,4, 1, 9, 6, 3, 5,
-            3, 4, 5, 2, 8, 6, 1, 7, 9
-            ]]
+        4, 5, 8, 9, 7, 1, 6, 2, 3, 
+        1, 9, 3, 8, 6, 2, 4, 7, 5, 
+        6, 2, 7, 4, 5, 3, 8, 1, 9, 
+        9, 6, 2, 1, 4, 8, 5, 3, 7, 
+        5, 3, 4, 6, 9, 7, 1, 8, 2, 
+        8, 7, 1, 3, 2, 5, 9, 4, 6, 
+        3, 4, 9, 2, 8, 6, 7, 5, 1, 
+        7, 1, 6, 5, 3, 4, 2, 9, 8, 
+        2, 8, 5, 7, 1, 9, 3, 6, 4
+        ]]
+    assert len(SuSolver.solutions) == 1
+
 def test_get_all_solutions_if_there_are_multiple():
     Ns = Sudoku()
     SuSolver = Solver(Ns)
@@ -148,7 +150,6 @@ def test_get_all_solutions_if_there_are_multiple():
     SuSolver.get_solutions()
     assert len(SuSolver.solutions) > 1
 
-'''
 # if in a column, row or region there are exactly three squares which possible numbers
 # form a set with a total of three unique elements, then these numbers are not possible candidates
 # for the other squares in the same column, row or region.
