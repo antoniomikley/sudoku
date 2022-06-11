@@ -21,8 +21,10 @@ class Sudoku:
             self.regions[reg].append(self.squares[n])
     
     def input_numbers(self, sudoku: list):
-        for i in range(0, len(sudoku) -1):
-            self.squares[i].assign_number(sudoku[i])
+        for i in range(0, len(sudoku)):
+            if sudoku[i] != 0:
+                self.squares[i].number = sudoku[i]
+                self.squares[i].locked = True
 
 
 class Square:
@@ -33,41 +35,22 @@ class Square:
         self.number = 0
         self.grid = grid
         self.eliminated_numbers = []
+        self.locked = False
 
     @property
     def possible_numbers(self):
-        if self.number == 0:
-            possible_numbers = [n for n in range(1, 10) if n not in self.invalid_numbers]
-            return possible_numbers
-        else:
-            return []
-
-    @property
-    def invalid_numbers(self):
-        invalid_numbers = self.get_numbers_in_same_column() + self.get_numbers_in_same_row() + self.get_numbers_in_same_region() + self.eliminated_numbers
-        return invalid_numbers
+        if self.locked == False and self.number == 0:
+            return [n for n in range(1, 10) if n not in self.invalid_nums + self.eliminated_numbers]
+        return []
 
     def assign_number(self, num):
-        if self.number == 0 and num in self.possible_numbers:
+        if num in self.possible_numbers:
             self.number = num
+            return True
         else:
             return False
 
-    def get_numbers_in_same_column(self):
-        numbers_same_column = []
-        for n in range(0, 9):
-            numbers_same_column.append(self.grid.columns[self.column][n].number)
-        return numbers_same_column
-
-    def get_numbers_in_same_row(self):
-        numbers_same_row = []
-        for n in range(0, 9):
-            numbers_same_row.append(self.grid.rows[self.row][n].number)
-        return numbers_same_row
-
-    def get_numbers_in_same_region(self):
-        numbers_same_region = []
-        for n in range(0, 9):
-            numbers_same_region.append(self.grid.regions[self.region][n].number)
-        return numbers_same_region
+    @property
+    def invalid_nums(self):
+        return [square.number for square in self.grid.columns[self.column] + self.grid.rows[self.row] + self.grid.regions[self.region]]
 
